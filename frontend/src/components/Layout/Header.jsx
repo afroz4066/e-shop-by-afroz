@@ -11,15 +11,21 @@ import {
 import { CgProfile } from "react-icons/cg";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { BiMenuAltLeft } from "react-icons/bi";
-import DropDown from "./DropDown.jsx";
+import DropDown from "./DropDown";
 import Navbar from "./Navbar";
+import { useSelector } from "react-redux";
+import { backend_url } from "../../server";
+import Cart from "../cart/Cart";
+import Wishlist from "../Wishlist/Wishlist";
 
 const Header = (activeHeading) => {
+  const { isAuthenticated, user } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
   const [dropdown, setDropDown] = useState(false);
-  // comment
+  const [openCart, setOpenCart] = useState(false);
+  const [openwishlist, setOpenWishlist] = useState(false);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
@@ -136,14 +142,17 @@ const Header = (activeHeading) => {
             <div className={`${styles.noramlFlex}`}>
               <div
                 className="relative cursor-pointer mr-[15px]"
-                // onClick={() => setOpenWishlist(true)}
+                onClick={() => setOpenWishlist(true)}
               >
                 <AiOutlineHeart size={30} color="rgb(255 255 255 / 83%)" />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
                   {/* {wishlist && wishlist.length} */}0
                 </span>
               </div>
-              <div className="relative cursor-pointer mr-[15px]">
+              <div
+                className="relative cursor-pointer mr-[15px]"
+                onClick={() => setOpenCart(true)}
+              >
                 <AiOutlineShoppingCart
                   size={30}
                   color="rgb(255 255 255 / 83%)"
@@ -152,11 +161,29 @@ const Header = (activeHeading) => {
                   2
                 </span>
               </div>
-              <div className="relative cursor-pointer mr-[15px]">
-                <Link to="/login">
-                  <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
-                </Link>
+              <div className={`${styles.noramlFlex}`}>
+                <div className="relative cursor-pointer mr-[15px]">
+                  {isAuthenticated ? (
+                    <Link to="/profile">
+                      <img
+                        src={`${backend_url}${user.avatar}`}
+                        className="w-[35px] h-[35px] rounded-full"
+                        alt=""
+                      />
+                    </Link>
+                  ) : (
+                    <Link to="/login">
+                      <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
+                    </Link>
+                  )}
+                </div>
               </div>
+              {/*Cart PopUp */}
+              {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+              {/*Wishlist PopUp */}
+              {openwishlist ? (
+                <Wishlist setOpenWishlist={setOpenWishlist} />
+              ) : null}
             </div>
           </div>
         </div>
